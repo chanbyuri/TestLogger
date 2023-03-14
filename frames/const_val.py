@@ -1,0 +1,3 @@
+
+FRAME_PAD = 10
+CHILD_PAD = 5
