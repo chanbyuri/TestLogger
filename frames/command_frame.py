@@ -4,7 +4,7 @@ import os
 # from ..const_val import *
 from frames.const_val import *
 from const_val import *
-from tkinter_custom_modules.modules import *
+from modules.modules import *
 
 
 class CommandFrame(tk.Frame):

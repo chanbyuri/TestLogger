@@ -13,14 +13,9 @@ class MainProgram(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title(self.PROGRAM_TITLE)
-
-        if OS == MACOS:
-            # in macOS, set geometry manually.
-            self.geometry("1280x720+0+0")
-        else:
-            # not in macOS, set fullscreen.
-            self.attributes("-fullscreen", True)
+        self.geometry("1280x720+100+100")
 
         self.cmd_frame = CommandFrame(self)
         self.sample_frame = SampleFrame(self)
+
         self.mainloop()
