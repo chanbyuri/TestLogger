@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from frames.const_val import *
-from tkinter_custom_modules.modules import *
+from modules.modules import *
 
 SAMPLES: list = ['SB180-A', 'SB181-A', 'SB250-A', 'SB251-A', 'SE018-A(1600RPM)']
 
@@ -48,6 +48,8 @@ class EachSampleFrame(tk.LabelFrame):
         start_btn = LeftSideButton(cmd_frm, text='start', command=start_test)
         stop_btn = LeftSideButton(cmd_frm, text='stop', command=stop_test)
         setup_btn = LeftSideButton(cmd_frm, text='part', command=setup_sample)
+        run_led = LedCanvas(cmd_frm)
+        run_led.draw_green_led()
 
         # info_frm = tk.Frame(self, borderwidth=1, relief='solid')
         # info_frm.pack(fill='x', expand=False, padx=CHILD_PAD, pady=CHILD_PAD)
