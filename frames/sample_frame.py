@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from frames.const_val import *
 from modules.modules import *
+from functions.sample import *
 
 SAMPLES: list = ['SB180-A', 'SB181-A', 'SB250-A', 'SB251-A', 'SE018-A(1600RPM)']
 
@@ -11,16 +12,18 @@ class SampleFrame(tk.Frame):
         super().__init__(master)
         self.pack(padx=FRAME_PAD, pady=FRAME_PAD, fill='both', expand=True)
 
-        scroll = ttk.Scrollbar(self)
+        scroll = ttk.Scrollbar(self,orient='horizontal')
         scroll.pack(side='bottom', fill='x')
 
-        for _sample in SAMPLES:
-            new_sample_frm = EachSampleFrame(self, _sample)
+        samplelist = os.listdir(SAMPLE_PATH)
+        for i in SAMPLES:
+            EachSampleFrame(self,i)
+
 
 
 class EachSampleFrame(tk.LabelFrame):
     def __init__(self, master, sample_name):
-        super().__init__(master, text=sample_name, borderwidth=2, relief="solid")
+        super().__init__(master, text=sample_name, borderwidth=2, relief="solid", width=100)
         self.pack(side="left", fill='both', expand=True, padx=FRAME_PAD, pady=FRAME_PAD)
 
         self._start_time = tk.StringVar()
@@ -30,9 +33,7 @@ class EachSampleFrame(tk.LabelFrame):
         self._total_test_time = tk.IntVar()
         self._total_cycle = tk.IntVar()
 
-        # cmd_frm = tk.Frame(self, borderwidth=1, relief="solid")
         cmd_frm = BaseElementFrame(self)
-        # cmd_frm.pack(fill='x', expand=False, padx=CHILD_PAD, pady=CHILD_PAD)
 
         def start_test():
             pass
@@ -43,20 +44,13 @@ class EachSampleFrame(tk.LabelFrame):
         def setup_sample():
             pass
 
-        # start_btn = tk.Button(cmd_frm, text='start', command=start_test)
-        # start_btn.pack(padx=CHILD_PAD, pady=CHILD_PAD)
         start_btn = LeftSideButton(cmd_frm, text='start', command=start_test)
         stop_btn = LeftSideButton(cmd_frm, text='stop', command=stop_test)
         setup_btn = LeftSideButton(cmd_frm, text='part', command=setup_sample)
         run_led = LedCanvas(cmd_frm)
-        run_led.draw_green_led()
 
-        # info_frm = tk.Frame(self, borderwidth=1, relief='solid')
-        # info_frm.pack(fill='x', expand=False, padx=CHILD_PAD, pady=CHILD_PAD)
         start_date_frm = BaseElementFrame(self)
 
-        # lbl = tk.Label(info_frm, text='start time')
-        # lbl.pack(side='top', padx=CHILD_PAD, pady=CHILD_PAD)
         lbl = LeftSideLabel(start_date_frm, text='start date')
         start_date_txt = tk.StringVar(value='hi')
         etr = LeftSideEntry(start_date_frm, "readonly", start_date_txt)
