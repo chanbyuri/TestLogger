@@ -4,77 +4,73 @@ from frames.const_val import *
 from modules.modules import *
 from functions.sample import *
 
-SAMPLES: list = ['SB180-A', 'SB181-A', 'SB250-A', 'SB251-A', 'SE018-A(1600RPM)']
-
 
 class SampleFrame(tk.Frame):
-    def __init__(self, master):
+    def __init__(self, master, samples:list):
+        self._samples = {}
         super().__init__(master)
         self.pack(padx=FRAME_PAD, pady=FRAME_PAD, fill='both', expand=True)
 
         scroll = ttk.Scrollbar(self,orient='horizontal')
         scroll.pack(side='bottom', fill='x')
 
-        samplelist = os.listdir(SAMPLE_PATH)
-        for i in SAMPLES:
-            EachSampleFrame(self,i)
+        for i in samples:
+            self.add_sample(i)
 
+    def add_sample(self, name):
+        new_sample_frame = EachSampleFrame(self, name)
+        self._samples[name] = new_sample_frame
+
+    def pop_sample(self, name):
+        self._samples[name].destroy()
+        self._samples.pop(name)
+
+    def get_sample_names(self):
+        return self._samples
 
 
 class EachSampleFrame(tk.LabelFrame):
     def __init__(self, master, sample_name):
+        self._sample = Sample(sample_name)
+
         super().__init__(master, text=sample_name, borderwidth=2, relief="solid", width=100)
-        self.pack(side="left", fill='both', expand=True, padx=FRAME_PAD, pady=FRAME_PAD)
+        self.pack(side="left", fill='y', padx=FRAME_PAD, pady=FRAME_PAD)
 
-        self._start_time = tk.StringVar()
-        self._stop_time = tk.StringVar()
-        self._routine_second = tk.IntVar()
-        self._is_testing = tk.BooleanVar()
-        self._total_test_time = tk.IntVar()
-        self._total_cycle = tk.IntVar()
-
-        cmd_frm = BaseElementFrame(self)
-
-        def start_test():
-            pass
-
-        def stop_test():
-            pass
-
-        def setup_sample():
-            pass
-
-        start_btn = LeftSideButton(cmd_frm, text='start', command=start_test)
-        stop_btn = LeftSideButton(cmd_frm, text='stop', command=stop_test)
-        setup_btn = LeftSideButton(cmd_frm, text='part', command=setup_sample)
-        run_led = LedCanvas(cmd_frm)
-
-        start_date_frm = BaseElementFrame(self)
-
-        lbl = LeftSideLabel(start_date_frm, text='start date')
-        start_date_txt = tk.StringVar(value='hi')
-        etr = LeftSideEntry(start_date_frm, "readonly", start_date_txt)
-
-        stop_date_frm = BaseElementFrame(self)
-
-        lbl = LeftSideLabel(stop_date_frm, text='stop date')
-        stop_date_txt = tk.StringVar(value='bye')
-        etr = LeftSideEntry(stop_date_frm, "readonly", stop_date_txt)
-
-        start_time_frm = BaseElementFrame(self)
-
-        lbl = LeftSideLabel(start_time_frm, text='start time')
-        start_time_txt = tk.StringVar(value='9:00')
-        etr = LeftSideEntry(start_time_frm, "readonly", start_time_txt)
-
-        stop_time_frm = BaseElementFrame(self)
-
-        lbl = LeftSideLabel(stop_time_frm, text='stop time')
-        stop_time_txt = tk.StringVar(value='18:00')
-        etr = LeftSideEntry(stop_time_frm, "readonly", stop_time_txt)
+        cmd_frm = CommandFrame(self, self._sample)
 
 
 class BaseElementFrame(tk.Frame):
     def __init__(self, master):
         super().__init__(master, borderwidth=1, relief="solid")
         self.pack(fill='x', padx=CHILD_PAD, pady=CHILD_PAD)
+
+
+class CommandFrame(BaseElementFrame):
+    def __init__(self, master, sample):
+        super().__init__(master)
+        self._sample = sample
+
+        start_btn = LeftSideButton(self, text='start', command=self.start_test)
+        stop_btn = LeftSideButton(self, text='stop', command=self.stop_test)
+        setup_btn = LeftSideButton(self, text='part', command=self.replace_part)
+
+    def start_test(self):
+        _dt = self._sample.add_log_now("start test")
+        InformationFrame(self.master, 'start test', _dt)
+        pass
+
+    def stop_test(self):
+        _dt = self._sample.add_log_now("stop test")
+        InformationFrame(self.master, 'stop test', _dt)
+        pass
+
+    def replace_part(self):
+        pass
+
+
+class InformationFrame(BaseElementFrame):
+    def __init__(self, master, text, value):
+        super().__init__(master)
+
+        LeftSideLabel(self, text)
+        LeftSideEntry(self, "readonly", value)

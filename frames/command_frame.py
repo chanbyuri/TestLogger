@@ -5,6 +5,7 @@ import os
 from frames.const_val import *
 from const_val import *
 from modules.modules import *
+import tkinter.simpledialog
 
 
 class CommandFrame(tk.Frame):
@@ -15,18 +16,17 @@ class CommandFrame(tk.Frame):
         sample_cmd_frm = BaseCommandFrame(self, text='Sample Command')
 
         def new_sample():
-            tl = tk.Toplevel(self)
-            tl.resizable(False, False)
-            tl.title("setup new sample")
-            tl.attributes('-topmost', 'true')
+            name = tk.simpledialog.askstring('set new sample', "sample name")
+            if name is not None and name != '':
+                master.sample_frame.add_sample(name+'.csv')
 
         btn_new_sample = LeftSideButton(sample_cmd_frm, text='New Sample', command=new_sample)
 
         def pop_sample():
-            tl = tk.Toplevel(self)
-            tl.resizable(False, False)
-            tl.title("pop sample")
-            tl.attributes('-topmost', 'true')
+            names = master.sample_frame.get_sample_names()
+            name = tk.simpledialog.askstring('pop sample', "sample name")
+            if name in names:
+                master.sample_frame.pop_sample(name)
 
         btn_pop_sample = LeftSideButton(sample_cmd_frm, text='Pop Sample', command=pop_sample)
 
@@ -65,3 +65,4 @@ class BaseCommandFrame(tk.LabelFrame):
     def __init__(self, master, text):
         super().__init__(master, text=text, borderwidth=2, relief="solid")
         self.pack(side='left', padx=FRAME_PAD, pady=FRAME_PAD)
+

@@ -3,7 +3,7 @@ from const_val import *
 import tkinter as tk
 from frames.sample_frame import *
 from frames.command_frame import *
-
+import os
 
 class MainProgram(tk.Tk):
     TITLE = "TestLogger"
@@ -16,6 +16,14 @@ class MainProgram(tk.Tk):
         self.geometry("1280x720+100+100")
 
         self.cmd_frame = CommandFrame(self)
-        self.sample_frame = SampleFrame(self)
+
+        if SAMPLE_FOLDER not in os.listdir():
+            os.mkdir(SAMPLE_FOLDER)
+        sample_list = os.listdir(SAMPLE_PATH)
+        self.sample_frame = SampleFrame(self, sample_list)
 
         self.mainloop()
+
+
+if __name__ == '__main__':
+    MainProgram()

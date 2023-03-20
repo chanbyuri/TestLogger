@@ -17,7 +17,8 @@ class LeftSideLabel(tk.Label):
 
 
 class LeftSideEntry(tk.Entry):
-    def __init__(self, master, state, str_var):
+    def __init__(self, master, state, str):
+        str_var = tk.StringVar(value=str)
         super().__init__(master, textvariable=str_var, state=state, width=5)
         self.pack(side='left', padx=CHILD_PAD, pady=CHILD_PAD, fill='x', expand=True)
 

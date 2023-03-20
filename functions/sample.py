@@ -3,15 +3,17 @@ import datetime
 import os
 
 PROJECT_DIR = os.getcwd() + '/'
-SAMPLE_FOLDER = "samples/"
-SAMPLE_PATH = f"{PROJECT_DIR}{SAMPLE_FOLDER}"
+SAMPLE_FOLDER = "samples"
+# SAMPLE_PATH = f"{PROJECT_DIR}{SAMPLE_FOLDER}/"
+SAMPLE_PATH = f"{SAMPLE_FOLDER}/"
 ENCODING = 'UTF-8'
+
 
 class Sample:
     DEFAULT_KEYS = ['date', 'time', 'log']
 
     def __init__(self, name):
-        self._path:str = f"{PROJECT_DIR}{SAMPLE_FOLDER}{name}.csv"
+        self._path:str = f"{SAMPLE_PATH}{name}"
         self._data:list = []
         self._keys:list = []
 
@@ -23,7 +25,7 @@ class Sample:
     def new_file(self):
         self._keys = self.DEFAULT_KEYS
 
-        with open(self._path, 'w',encoding=ENCODING, newline='') as f:
+        with open(self._path+'.csv', 'w',encoding=ENCODING, newline='') as f:
             writer = csv.writer(f)
             writer.writerow(self._keys)
         self.add_log_now('log created')
@@ -50,6 +52,7 @@ class Sample:
     def add_log_now(self, log):
         _dt = datetime.datetime.now()
         self.add_log(_dt, log)
+        return _dt
 
     def add_log(self, _dt:datetime.datetime, log):
         date = _dt.strftime('%Y-%m-%d')
@@ -67,6 +70,26 @@ class Sample:
     def print_data(self):
         for i in self._data:
             print(i)
+
+    def get_start_datetime(self):
+        return self._get_data('log created', True)
+
+    def get_last_stop_test(self):
+        return self._get_data('stop test')
+
+    def get_last_start_test(self):
+        return self._get_data('start test')
+
+    def _get_data(self, log, updown: bool = False):
+        with open(self._path, 'r', encoding=ENCODING, newline='') as f:
+            reader = list(csv.reader(f))
+            if updown == False:
+                #upside to down
+                reader = reader.reverse()
+            for row in reader:
+                if row[self.DEFAULT_KEYS[-1]] == log:
+                    return row
+        return [None, None, None]
 
 
 if __name__ == '__main__':
