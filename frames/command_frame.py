@@ -34,13 +34,20 @@ class CommandFrame(tk.Frame):
 
         def start_all():
             tk.messagebox.showinfo('start all', 'All Sample Run Now.')
-            pass
+            for k,v in self.master.sample_frame._samples.items():
+                # v == eachsampleframe
+                if v._sample._is_running == False:
+                    v._cmd_frm.start_test()
 
         btn_start = LeftSideButton(total_cmd_frm, text='Start All', command=start_all)
 
         def stop_all():
             tk.messagebox.showinfo('stop all', 'All Sample Stop Now.')
-            pass
+            for k,v in self.master.sample_frame._samples.items():
+                # v == eachsampleframe
+                if v._sample._is_running == True:
+                    v._cmd_frm.stop_test()
+
 
         btn_stop = LeftSideButton(total_cmd_frm, text='Stop All', command=stop_all)
 
@@ -53,12 +60,10 @@ class CommandFrame(tk.Frame):
 
         btn_quit = LeftSideButton(ext_frm, text='Quit', command=quit_program)
 
-        def shutdown_machine():
-            tk.messagebox.showinfo('shut down', 'shut down only raspberrypi.')
-            if OS == LINUX:
-                os.system('sudo shutdown -h now')
+        def report():
+            pass
 
-        btn_shutdown = LeftSideButton(ext_frm, text='Shut Down', command=shutdown_machine)
+        btn_shutdown = LeftSideButton(ext_frm, text='Report', command=report)
 
 
 class BaseCommandFrame(tk.LabelFrame):

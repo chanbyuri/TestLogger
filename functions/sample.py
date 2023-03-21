@@ -10,25 +10,37 @@ ENCODING = 'UTF-8'
 
 
 class Sample:
-    DEFAULT_KEYS = ['date', 'time', 'log']
+    KEY_DATE = 'date'
+    KEY_TIME = 'time'
+    KEY_LOG = 'log'
+    DEFAULT_KEYS = [KEY_DATE, KEY_TIME, KEY_LOG]
+
+    LOG_CREATED = 'log created'
+    LOG_START_TEST = 'start test'
+    LOG_STOP_TEST = 'stop test'
 
     def __init__(self, name):
         self._path:str = f"{SAMPLE_PATH}{name}"
         self._data:list = []
         self._keys:list = []
 
+        self._is_running = False
+
         try:
             self.import_file()
         except FileNotFoundError:
             self.new_file()
 
+    def is_running(self):
+        return self._is_running
+
     def new_file(self):
         self._keys = self.DEFAULT_KEYS
 
-        with open(self._path+'.csv', 'w',encoding=ENCODING, newline='') as f:
+        with open(self._path, 'w',encoding=ENCODING, newline='') as f:
             writer = csv.writer(f)
             writer.writerow(self._keys)
-        self.add_log_now('log created')
+        self.add_log_now(self.LOG_CREATED)
 
     def import_file(self):
         with open(self._path, 'r',encoding=ENCODING) as f:
@@ -39,6 +51,10 @@ class Sample:
                 for k, v in zip(_keys, _values):
                     dict_data[k] = v
                 self._data.append(dict_data)
+                if dict_data[self.KEY_LOG] == self.LOG_START_TEST:
+                    self._is_running = True
+                elif dict_data[self.KEY_LOG] == self.LOG_STOP_TEST:
+                    self._is_running = False
 
     def export_file(self):
         with open(self._path, 'w',encoding=ENCODING, newline='') as f:
@@ -51,8 +67,8 @@ class Sample:
 
     def add_log_now(self, log):
         _dt = datetime.datetime.now()
-        self.add_log(_dt, log)
-        return _dt
+        date, time = self.add_log(_dt, log)
+        return date, time
 
     def add_log(self, _dt:datetime.datetime, log):
         date = _dt.strftime('%Y-%m-%d')
@@ -62,10 +78,17 @@ class Sample:
         for k, v in zip(self._keys, data):
             dict_data[k] = v
         self._data.append(dict_data)
-        
+
+        if log == self.LOG_STOP_TEST:
+            self._is_running = False
+        elif log == self.LOG_START_TEST:
+            self._is_running = True
+
         with open(self._path, 'a', encoding=ENCODING, newline='') as f:
             writer = csv.writer(f)
             writer.writerow([date, time, log])
+
+        return date, time
 
     def print_data(self):
         for i in self._data:
