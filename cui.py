@@ -17,10 +17,10 @@ class MainProgram:
         self._sample_list[sample_name].add_log_now('stop test')
 
     def print_samples(self):
-        print('samples',self._sample_names,end='\n')
+        print('samples', self._sample_names, end='\n')
 
     def print_commands(self):
-        print('command list','1.start','2.stop','0.end',end='\n')
+        print('command list', '1.start', '2.stop', '0.end', end='\n')
         
 
 

@@ -6,13 +6,12 @@ from modules.modules import *
 from functions.sample import *
 
 
-class SampleFrame(tk.Frame):
+class SampleFrame(tk.Canvas):
     def __init__(self, master, samples:list):
         self._samples = {}
         super().__init__(master)
         self.pack(padx=FRAME_PAD, pady=FRAME_PAD, fill='both', expand=True)
-
-        scroll = ttk.Scrollbar(self,orient='horizontal')
+        scroll = ttk.Scrollbar(self, orient='horizontal', command=self.xview)
         scroll.pack(side='bottom', fill='x')
 
         for i in samples:
@@ -34,7 +33,7 @@ class EachSampleFrame(tk.LabelFrame):
     def __init__(self, master, sample_name):
         self._sample = Sample(sample_name)
 
-        super().__init__(master, text=sample_name, borderwidth=2, relief="solid", width=100)
+        super().__init__(master, text=sample_name, borderwidth=2, relief="solid")
         self.pack(side="left", fill='y', padx=FRAME_PAD, pady=FRAME_PAD)
 
         self._cmd_frm = CommandFrame(self, self._sample)
@@ -53,38 +52,37 @@ class CommandFrame(BaseElementFrame):
 
         self._start_btn = LeftSideButton(self, text='start', command=self.start_test)
         self._stop_btn = LeftSideButton(self, text='stop', command=self.stop_test)
-        self._part_btn = LeftSideButton(self, text='part', command=self.replace_part)
+        self._log_btn = LeftSideButton(self, text='log', command=self.logging)
 
         if self._sample.is_running() == True:
             self._start_btn['state'] = tk.DISABLED
             self._stop_btn['state'] = tk.NORMAL
-            self._part_btn['state'] = tk.DISABLED
+            self._log_btn['state'] = tk.DISABLED
         elif self._sample.is_running() == False:
             self._start_btn['state'] = tk.NORMAL
             self._stop_btn['state'] = tk.DISABLED
-            self._part_btn['state'] = tk.NORMAL
+            self._log_btn['state'] = tk.NORMAL
 
     def start_test(self):
         date, time = self._sample.add_log_now("start test")
         InformationFrame(self.master, 'start test', [date, time])
         self._start_btn['state'] = tk.DISABLED
         self._stop_btn['state'] = tk.NORMAL
-        self._part_btn['state'] = tk.DISABLED
+        self._log_btn['state'] = tk.DISABLED
 
     def stop_test(self):
         date, time = self._sample.add_log_now("stop test")
         InformationFrame(self.master, 'stop test', [date, time])
         self._start_btn['state'] = tk.NORMAL
         self._stop_btn['state'] = tk.DISABLED
-        self._part_btn['state'] = tk.NORMAL
+        self._log_btn['state'] = tk.NORMAL
 
-    def replace_part(self):
-        part = tk.simpledialog.askstring('replaced part', 'replaced part')
-        if part == '' or part == None:
+    def logging(self):
+        log = tk.simpledialog.askstring('write log', 'new log')
+        if log == '' or log is None:
             return
-        log = f'{part} changed'
         date, time = self._sample.add_log_now(log)
-        InformationFrame(self.master, part, [date, time])
+        InformationFrame(self.master, log, [date, time])
         pass
 
 
